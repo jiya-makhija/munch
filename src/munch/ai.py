@@ -52,13 +52,23 @@ def dessert_recommendation(
     goal_cal: int, goal_protein: int,
     week_balance: int,
 ) -> str:
-    prompt = f"""Today I've consumed {today_cal} cal / {today_protein}g protein (goal: {goal_cal} cal / {goal_protein}g protein).
-My weekly calorie balance (total consumed - total goal) is {week_balance}.
+    cal_left = goal_cal - today_cal
+    protein_left = goal_protein - today_protein
+    prompt = f"""Today I've consumed {today_cal} cal / {today_protein}g protein (goal: {goal_cal} cal / {goal_protein}g protein). Remaining: {cal_left} cal / {protein_left}g protein. Weekly balance: {week_balance}.
 
-Tell me if I've earned dessert today and what I should get. Consider:
-- If I'm under my daily goal by 200+ cal, I've earned it
-- If my weekly balance is negative (under budget), bonus points
-- Suggest a specific dessert (ice cream, cookie, etc.)
+Available treat options:
+1. DEFAULT COMBO (recommend first if there's room):
+   - Barebells Protein Bar (200cal, 20g protein)
+   - Fage yogurt bowl + strawberries/blueberries + 1 tbsp PB (180cal, 18g protein)
+   - Combined: ~380cal, 38g protein
+
+2. BACKUP ONLY — David Protein Bar (150cal, 28g protein)
+   Only recommend this when cal_left < 200 AND protein_left > 20g (over on calories, still short on protein).
+
+Rules:
+- Always recommend option 1 (the combo) if the user has >= 380 cal remaining
+- Never recommend the David bar as default — only when the backup condition is met
+- If there's no room for either, say to skip tonight
 Keep it fun and under 4 sentences."""
     return _ask(prompt)
 
