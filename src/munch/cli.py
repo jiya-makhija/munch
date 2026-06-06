@@ -20,6 +20,21 @@ def init(cal: int, protein: int, location: str):
 
 
 @cli.command()
+@click.option("--cal", type=int, default=None, help="New daily calorie goal")
+@click.option("--protein", type=int, default=None, help="New daily protein goal (g)")
+@click.option("--location", default=None, help="New location")
+def goal(cal: int | None, protein: int | None, location: str | None):
+    """Update individual goals without resetting everything."""
+    profile = db.get_profile()
+    if not profile:
+        click.echo("Run `munch init` first to set your goals.")
+        return
+    db.update_profile(calories=cal, protein=protein, location=location)
+    updated = db.get_profile()
+    click.echo(f"Goals updated: {updated['daily_calories']} cal, {updated['daily_protein']}g protein, {updated['location']}")
+
+
+@cli.command()
 @click.argument("meal")
 @click.option("--cal", type=int, default=None, help="Calories (skips AI guess)")
 @click.option("--protein", type=int, default=None, help="Protein in grams (skips AI guess)")
