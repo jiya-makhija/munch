@@ -43,66 +43,35 @@ pip install -e .
 
 ## Usage
 
-Set up your profile:
-```bash
-munch init --cal 2000 --protein 150 --location "Atlanta"
-```
+### Profile
 
-Update individual goals without resetting:
-```bash
-munch goal --cal 1800 --protein 140
-```
+| Command | Description |
+|---------|-------------|
+| `munch init --cal 2000 --protein 150 --location "Atlanta"` | Set up your profile |
+| `munch goal --cal 1800 --protein 140` | Update individual goals |
 
-Log a meal with auto-estimated macros:
-```bash
-munch log "chipotle chicken bowl"
-munch log "pad thai" --cal 850 --protein 32
-```
+### Logging
 
-Log interactively using your frequent meals:
-```bash
-munch log
-```
-Shows your top meals by frequency — pick a number to log instantly, or type something new.
+| Command | Description |
+|---------|-------------|
+| `munch log "chipotle chicken bowl"` | Log with auto-estimated macros |
+| `munch log "pad thai" --cal 850 --protein 32` | Log with exact macros |
+| `munch log` | Interactive mode — shows your top meals by frequency; pick a number to log instantly, or type something new |
 
-See today's progress:
-```bash
-munch status
-```
+### Tracking
 
-View the past 7 days grouped by date:
-```bash
-munch history
-```
+| Command | Description |
+|---------|-------------|
+| `munch status` | See today's progress |
+| `munch history` | View the past 7 days grouped by date |
+| `munch faves` | Shows which meals you reach for most, with their saved macros |
+| `munch insights` | Analyzes your week — are you hitting protein? Any patterns worth knowing? Honest, friendly feedback |
 
-Get ordering advice:
-```bash
-munch plan "Cava"
-```
+### Guidance
 
-Dessert check:
-```bash
-munch dessert
-```
-
-Snack suggestion based on remaining macros:
-```bash
-munch snack
-```
-
-Rate a spot:
-```bash
-munch rate "Cava" 9 --notes "great macros"
-```
-
-List your most-logged meals:
-```bash
-munch faves
-```
-See which meals you reach for most, with their saved macros.
-
-Weekly AI insights:
-```bash
-munch insights
-```
-Analyzes your week — are you hitting protein? Any patterns worth knowing? Honest, friendly feedback on how the week looked.
+| Command | Description |
+|---------|-------------|
+| `munch plan "Cava"` | Get ordering advice at a specific spot |
+| `munch dessert` | Dessert check — see if you've got room |
+| `munch snack` | Snack suggestion based on remaining macros |
+| `munch rate "Cava" 9 --notes "great macros"` | Rate a spot and save notes |
