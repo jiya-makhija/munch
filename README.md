@@ -1,11 +1,30 @@
 # munch
 
 A macro-aware eating assistant for people who eat out a lot.
-Set your daily goals, log meals, and get warm, personalized
-advice on what to order, whether you've earned dessert, and
-what snack fits your remaining macros. Tracks your patterns,
-remembers your frequent meals, and keeps you on track without
-the guilt trip.
+You don't have to eat the same boring thing every day — munch
+helps you eat what you actually want while keeping your goals
+in check. Log whatever you're craving, and it'll tell you how
+the rest of your day should look.
+
+## How it works
+
+**Log what you eat** — type a meal name and munch estimates the macros
+using AI. Or pass exact numbers if you know them. Over time it learns
+your frequent meals and surfaces them as quick picks.
+
+**See where you stand** — check your day's progress, your week at a
+glance, and which meals you reach for the most.
+
+**Get real-time guidance** — heading to Cava with 700 cal left?
+`munch plan` tells you what fits. Done with dinner and wondering
+if you've got room for something sweet? `munch dessert` checks.
+Have room for a snack but don't know what? `munch snack` picks
+something based on fiber, protein, and what you've got left.
+
+**The point is freedom, not restriction.** You log what you eat,
+see the numbers, and decide from there. No guilt, no meal plans,
+no "good" or "bad" foods — just awareness and a sister who's
+got your back.
 
 ## Usage
 
