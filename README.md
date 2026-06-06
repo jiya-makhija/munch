@@ -1,9 +1,11 @@
 # munch
 
-A macro-aware eating assistant for people who eat out a lot. 
-Tell it where you're eating and it tells you what to order to 
-hit your goals. Tracks your meals, learns your patterns, and 
-lets you know if you've earned dessert.
+A macro-aware eating assistant for people who eat out a lot.
+Set your daily goals, log meals, and get warm, personalized
+advice on what to order, whether you've earned dessert, and
+what snack fits your remaining macros. Tracks your patterns,
+remembers your frequent meals, and keeps you on track without
+the guilt trip.
 
 ## Usage
 
@@ -12,10 +14,20 @@ Set up your profile:
 munch init --cal 2000 --protein 150 --location "Atlanta"
 ```
 
-Log a meal (auto-estimates macros):
+Update individual goals without resetting:
+```bash
+munch goal --cal 1800 --protein 140
+```
+
+Log a meal with auto-estimated macros:
 ```bash
 munch log "chipotle chicken bowl"
 munch log "pad thai" --cal 850 --protein 32
+```
+
+Log interactively using your frequent meals:
+```bash
+munch log
 ```
 
 See today's progress:
@@ -23,10 +35,14 @@ See today's progress:
 munch status
 ```
 
+View the past 7 days grouped by date:
+```bash
+munch history
+```
+
 Get ordering advice:
 ```bash
 munch plan "Cava"
-munch plan "random thai place" --goal "high protein"
 ```
 
 Dessert check:
@@ -34,12 +50,22 @@ Dessert check:
 munch dessert
 ```
 
-Rate a spot:
+Snack suggestion based on remaining macros:
 ```bash
-munch rate "Cava" 9 --notes "amazing macros"
+munch snack
 ```
 
-Weekly insights:
+Rate a spot:
+```bash
+munch rate "Cava" 9 --notes "great macros"
+```
+
+List your most-logged meals:
+```bash
+munch faves
+```
+
+Weekly AI insights:
 ```bash
 munch insights
 ```
