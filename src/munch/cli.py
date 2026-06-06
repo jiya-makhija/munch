@@ -1,4 +1,5 @@
 import click
+from datetime import datetime
 from . import db
 from . import ai
 
@@ -111,9 +112,12 @@ def status():
     goal_cal = profile["daily_calories"]
     goal_protein = profile["daily_protein"]
 
+    cal_left = goal_cal - total_cal
+    protein_left = goal_protein - total_protein
+
     click.echo(f"Goals: {goal_cal} cal, {goal_protein}g protein")
     click.echo(f"Logged: {total_cal} cal, {total_protein}g protein")
-    click.echo(f"Remaining: {goal_cal - total_cal} cal, {goal_protein - total_protein}g protein")
+    click.echo(f"Remaining: {cal_left} cal, {protein_left}g protein")
     click.echo("")
     if meals:
         click.echo("Meals today:")
@@ -121,6 +125,10 @@ def status():
             click.echo(f"  {m['name']} — {m['calories']} cal, {m['protein']}g protein")
     else:
         click.echo("No meals logged today.")
+
+    if cal_left > 500 and datetime.now().hour >= 15:
+        click.echo("")
+        click.echo("Looks like you have room for a snack \U0001f440 run munch snack")
 
 
 @cli.command()
@@ -173,6 +181,63 @@ def dessert():
         total_cal, total_protein, goal_cal, goal_protein, week_balance,
     )
     click.echo(verdict)
+
+
+SNACKS = [
+    ("Almonds (20g handful)", 120, 4, 2),
+    ("Walnuts (20g handful)", 130, 3, 1),
+    ("Pistachios (30g)", 160, 6, 3),
+    ("Baby carrots + 1 tbsp hummus", 70, 2, 3),
+    ("Apple slices + 1 tsp PB", 130, 2, 4),
+    ("Rice cakes (2)", 70, 1, 0),
+    ("Celery + 1 tbsp PB", 100, 3, 2),
+    ("Mixed berries (1 cup)", 70, 1, 4),
+    ("Edamame (half cup)", 90, 9, 4),
+]
+
+
+@cli.command()
+def snack():
+    """Suggest a low-cal, high-fiber snack based on remaining macros."""
+    profile = db.get_profile()
+    if not profile:
+        click.echo("Run `munch init` first to set your goals.")
+        return
+    meals = db.get_today_meals()
+    total_cal = sum(m["calories"] for m in meals)
+    total_protein = sum(m["protein"] for m in meals)
+    cal_left = profile["daily_calories"] - total_cal
+    protein_left = profile["daily_protein"] - total_protein
+
+    if cal_left <= 0:
+        click.echo("You're at or over your calorie goal — maybe skip the snack tonight.")
+        return
+
+    click.echo(f"Remaining budget: {cal_left} cal, {protein_left}g protein")
+    click.echo("")
+
+    suggestions = []
+
+    if protein_left > 30:
+        suggestions.append(("Edamame (half cup) — 90 cal, 9g protein, 4g fiber", (90, 9, 4)))
+        suggestions.append(("Pistachios (30g) — 160 cal, 6g protein, 3g fiber", (160, 6, 3)))
+
+    if cal_left < 150:
+        suggestions.append(("Baby carrots + 1 tbsp hummus — 70 cal, 2g protein, 3g fiber", (70, 2, 3)))
+        suggestions.append(("Celery + 1 tbsp PB — 100 cal, 3g protein, 2g fiber", (100, 3, 2)))
+
+    suggestions.append(("Almonds (20g handful) — 120 cal, 4g protein, 2g fiber", (120, 4, 2)))
+    suggestions.append(("Rice cakes (2) — 70 cal, 1g protein, 0g fiber", (70, 1, 0)))
+
+    seen = set()
+    for label, _ in suggestions:
+        name = label.split(" —")[0]
+        if name not in seen:
+            seen.add(name)
+            click.echo(f"  \u2022 {label}")
+
+    click.echo("")
+    click.echo("Tip: prioritize fiber + satiety over pure calorie count.")
 
 
 @cli.command()
