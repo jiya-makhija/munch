@@ -4,8 +4,8 @@ version = "0.1.0"
 description = "A macro-aware eating assistant for people who eat out a lot"
 requires-python = ">=3.10"
 dependencies = [
-    "click>=8.4.1",
-    "requests>=2.34.2",
+    "click>=8.0.0",
+    "requests>=2.28.0",
     "openai>=1.0.0",
 ]
 
