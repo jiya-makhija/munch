@@ -26,6 +26,21 @@ see the numbers, and decide from there. No guilt, no meal plans,
 no "good" or "bad" foods — just awareness and a sister who's
 got your back.
 
+## Install
+
+Requires Python 3.11+. Install with pip (or uv):
+
+```bash
+pip install munch
+```
+
+Or clone and install locally:
+
+```bash
+git clone https://github.com/your-username/munch && cd munch
+pip install -e .
+```
+
 ## Usage
 
 Set up your profile:
@@ -48,6 +63,7 @@ Log interactively using your frequent meals:
 ```bash
 munch log
 ```
+Shows your top meals by frequency — pick a number to log instantly, or type something new.
 
 See today's progress:
 ```bash
@@ -83,8 +99,10 @@ List your most-logged meals:
 ```bash
 munch faves
 ```
+See which meals you reach for most, with their saved macros.
 
 Weekly AI insights:
 ```bash
 munch insights
 ```
+Analyzes your week — are you hitting protein? Any patterns worth knowing? Honest, friendly feedback on how the week looked.
