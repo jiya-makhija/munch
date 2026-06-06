@@ -35,17 +35,67 @@ def goal(cal: int | None, protein: int | None, location: str | None):
 
 
 @cli.command()
-@click.argument("meal")
+@click.argument("meal", required=False)
 @click.option("--cal", type=int, default=None, help="Calories (skips AI guess)")
 @click.option("--protein", type=int, default=None, help="Protein in grams (skips AI guess)")
-def log(meal: str, cal: int | None, protein: int | None):
-    """Log a meal. Macros auto-estimated via AI if not provided."""
-    if cal is None or protein is None:
+def log(meal: str | None, cal: int | None, protein: int | None):
+    """Log a meal. Macros auto-estimated via AI if not provided.
+    Run with no arguments for interactive favorite selection."""
+
+    if meal is None:
+        faves = db.get_frequent_meals(5)
+        if not faves:
+            click.echo("No frequent meals yet. Run `munch log \"meal name\"` to start.")
+            return
+        click.echo("Your frequent meals:")
+        for i, m in enumerate(faves, 1):
+            click.echo(f"  [{i}] {m['name']} — {m['calories']} cal, {m['protein']}g protein")
+        click.echo("  Or type a new meal:")
+        choice = click.prompt("", default="")
+        if choice.isdigit():
+            idx = int(choice) - 1
+            if 0 <= idx < len(faves):
+                m = faves[idx]
+                db.init_db()
+                db.log_meal(m["name"], m["calories"], m["protein"])
+                click.echo(f"Logged: {m['name']} — {m['calories']} cal, {m['protein']}g protein")
+                return
+            else:
+                click.echo("Invalid choice.")
+                return
+        meal = choice.strip()
+        if not meal:
+            return
+
+    if cal is not None and protein is not None:
+        db.init_db()
+        db.log_meal(meal, cal, protein)
+        click.echo(f"Logged: {meal} — {cal} cal, {protein}g protein")
+        return
+
+    saved = db.find_meal_by_name(meal)
+    if saved:
+        cal, protein = saved["calories"], saved["protein"]
+        click.echo(f"Found saved macros for \"{meal}\": {cal} cal, {protein}g protein")
+    else:
         click.echo(f"Estimating macros for \"{meal}\"...")
         cal, protein = ai.estimate_macros(meal)
+
     db.init_db()
     db.log_meal(meal, cal, protein)
     click.echo(f"Logged: {meal} — {cal} cal, {protein}g protein")
+
+
+@cli.command()
+def faves():
+    """Show your top 5 most logged meals."""
+    meals = db.get_frequent_meals(5)
+    if not meals:
+        click.echo("No meals logged yet. Start logging to build favorites!")
+        return
+    click.echo("Your top meals:")
+    for i, m in enumerate(meals, 1):
+        click.echo(f"  {i}. {m['name']} — {m['calories']} cal, {m['protein']}g protein (logged {m['cnt']}x)")
 
 
 @cli.command()
