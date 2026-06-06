@@ -93,3 +93,56 @@ def save_rating(restaurant: str, rating: int, notes: Optional[str]):
             "INSERT INTO ratings (restaurant, rating, notes) VALUES (?, ?, ?)",
             (restaurant, rating, notes),
         )
+
+
+def get_history_meals(days: int = 7) -> list[dict]:
+    with _conn() as conn:
+        rows = conn.execute("""
+            SELECT * FROM meals
+            WHERE logged_at >= datetime('now', ? || ' days', 'localtime')
+            ORDER BY logged_at DESC
+        """, (-days,)).fetchall()
+        return [dict(r) for r in rows]
+
+
+def update_profile(calories: int | None = None, protein: int | None = None, location: str | None = None):
+    fields = []
+    vals = []
+    if calories is not None:
+        fields.append("daily_calories = ?")
+        vals.append(calories)
+    if protein is not None:
+        fields.append("daily_protein = ?")
+        vals.append(protein)
+    if location is not None:
+        fields.append("location = ?")
+        vals.append(location)
+    if not fields:
+        return
+    vals.append(1)
+    with _conn() as conn:
+        conn.execute(
+            f"UPDATE profile SET {', '.join(fields)} WHERE id = ?",
+            vals,
+        )
+
+
+def get_frequent_meals(limit: int = 5) -> list[dict]:
+    with _conn() as conn:
+        rows = conn.execute("""
+            SELECT name, calories, protein, COUNT(*) as cnt
+            FROM meals
+            GROUP BY name, calories, protein
+            ORDER BY cnt DESC
+            LIMIT ?
+        """, (limit,)).fetchall()
+        return [dict(r) for r in rows]
+
+
+def find_meal_by_name(name: str) -> dict | None:
+    with _conn() as conn:
+        row = conn.execute(
+            "SELECT name, calories, protein FROM meals WHERE name = ? ORDER BY logged_at DESC LIMIT 1",
+            (name,),
+        ).fetchone()
+        return dict(row) if row else None

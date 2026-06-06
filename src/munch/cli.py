@@ -139,6 +139,31 @@ def insights():
     click.echo(analysis)
 
 
+@cli.command()
+def history():
+    """Show meals from the past 7 days, grouped by date with daily totals."""
+    meals = db.get_history_meals(7)
+    if not meals:
+        click.echo("No meals logged in the past 7 days.")
+        return
+
+    from collections import defaultdict
+    by_date = defaultdict(list)
+    for m in meals:
+        day = m["logged_at"][:10]
+        by_date[day].append(m)
+
+    for day in sorted(by_date, reverse=True):
+        day_meals = by_date[day]
+        total_cal = sum(m["calories"] for m in day_meals)
+        total_protein = sum(m["protein"] for m in day_meals)
+        click.echo(f"── {day} ──")
+        for m in day_meals:
+            click.echo(f"  {m['name']} — {m['calories']} cal, {m['protein']}g protein")
+        click.echo(f"  Total: {total_cal} cal, {total_protein}g protein")
+        click.echo("")
+
+
 def main():
     db.init_db()
     cli()
