@@ -31,19 +31,25 @@ def _ask(prompt: str) -> str:
     return r.choices[0].message.content.strip()
 
 
+_VIBE = """You're a warm, supportive older sister who's into fitness. You genuinely care. Talk like a real person — short sentences, casual, encouraging. Celebrate wins, never guilt-trip. Use "okayy", "you've got this" energy. No bullet points, no robot speak, no preaching."""
+
+
 def estimate_macros(meal_name: str) -> tuple[int, int]:
-    prompt = f"""You are a nutrition expert. Estimate the calories and protein in "{meal_name}" 
-as ordered from a typical US chain restaurant. Respond ONLY with a JSON object like:
+    prompt = f"""{_VIBE}
+
+hey so \"{meal_name}\" — gimme a rough estimate. respond with ONLY valid json, no other text at all:
 {{"calories": <int>, "protein": <int>}}"""
     raw = _ask(prompt)
+    # strip any markdown fences
+    raw = raw.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
     data = json.loads(raw)
     return int(data["calories"]), int(data["protein"])
 
 
 def suggest_order(restaurant: str, remaining_cal: int, remaining_protein: int) -> str:
-    prompt = f"""I have {remaining_cal} calories and {remaining_protein}g of protein remaining 
-today. Recommend what to order at {restaurant} to stay within my budget. 
-Suggest 1-2 items with estimated macros. Keep it concise and practical."""
+    prompt = f"""{_VIBE}
+
+okay so you're at {restaurant} with {remaining_cal} cal and {remaining_protein}g protein left today. what should you grab? recommend 1-2 things that'll actually keep you on track. keep it real and specific."""
     return _ask(prompt)
 
 
@@ -54,34 +60,23 @@ def dessert_recommendation(
 ) -> str:
     cal_left = goal_cal - today_cal
     protein_left = goal_protein - today_protein
-    prompt = f"""Today I've consumed {today_cal} cal / {today_protein}g protein (goal: {goal_cal} cal / {goal_protein}g protein). Remaining: {cal_left} cal / {protein_left}g protein. Weekly balance: {week_balance}.
+    prompt = f"""{_VIBE}
 
-Available treat options:
-1. DEFAULT COMBO (recommend first if there's room):
-   - Barebells Protein Bar (200cal, 20g protein)
-   - Fage yogurt bowl + strawberries/blueberries + 1 tbsp PB (180cal, 18g protein)
-   - Combined: ~380cal, 38g protein
+okay let's talk dessert. today you're at {today_cal} cal / {today_protein}g protein (goal was {goal_cal} / {goal_protein}). so you've got {cal_left} cal and {protein_left}g protein left. weekly balance is {week_balance}.
 
-2. BACKUP ONLY — David Protein Bar (150cal, 28g protein)
-   Only recommend this when cal_left < 200 AND protein_left > 20g (over on calories, still short on protein).
+here's what we're working with:
+- the usual: barebells protein bar (200cal, 20g protein) + fage yogurt bowl with berries and a lil pb (180cal, 18g protein) = ~380cal total. this is the move if there's room.
+- david protein bar (150cal, 28g protein) — only if they're over on calories but still short on protein (cal_left < 200 AND protein_left > 20g)
 
-Rules:
-- Always recommend option 1 (the combo) if the user has >= 380 cal remaining
-- Never recommend the David bar as default — only when the backup condition is met
-- If there's no room for either, say to skip tonight
-Keep it fun and under 4 sentences."""
+if they've got >=380cal left, tell them to go for the combo. if they're over calories but need protein, david bar's there. if there's no room, just say skip it tonight. keep it warm and under 4 sentences."""
     return _ask(prompt)
 
 
 def analyze_insights(meals_json: str) -> str:
-    prompt = f"""Analyze this week's meal data (JSON array) and provide insights:
+    prompt = f"""{_VIBE}
+
+take a look at this week's meals and tell me what's up:
 {meals_json}
 
-Highlight:
-1. Most common meals/restaurants
-2. Average daily calories and protein
-3. Any patterns or trends
-4. One actionable suggestion
-
-Keep it concise, 4-6 sentences."""
+what patterns do you see? what's working, what's not? any surprises? give one practical tip for next week. keep it real and supportive — no lecture, just honest vibes. 4-6 sentences."""
     return _ask(prompt)
