@@ -1,6 +1,6 @@
 [project]
 name = "munch"
-version = "0.1.0"
+version = "0.1.1"
 description = "A macro-aware eating assistant for people who eat out a lot"
 requires-python = ">=3.10"
 dependencies = [
